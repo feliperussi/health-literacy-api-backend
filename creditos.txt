@@ -1,0 +1,2 @@
+API principalmente hecha para el Proyecto 1 del curso de Inteligencia de Negocios
+Creditos a Diego Granada por diseñar la mayor parte.
