@@ -27,3 +27,15 @@ def read_root(request: Request):
 @app.post("/comment/predict")
 def ask_prediction(data: DataModel):
     return pred_model.make_predictions(data)
+
+@app.post("/comment/scoring")
+def ask_scoring(data: DataModel):
+    return pred_model.get_scores(data)
+    
+@app.post("/comment/distributions")
+def ask_distributions(data: DataModel):
+    return pred_model.get_distributions(data)
+
+@app.post("/comment/page")
+def ask_page(data: DataModel):
+    return pred_model.get_page(data)
