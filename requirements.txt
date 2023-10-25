@@ -7,4 +7,3 @@ pandas
 numpy
 sklearn
 spacy
-collections

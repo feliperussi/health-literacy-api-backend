@@ -1,0 +1,8 @@
+{
+    "gb_model": "C:/Users/felip/Downloads/api-20230308T032233Z-001/api/app/data/models/model_gb.pkl",
+    "rf_model": "C:/Users/felip/Downloads/api-20230308T032233Z-001/api/app/data/models/model_rf.pkl",
+    "weights": "C:/Users/felip/Downloads/api-20230308T032233Z-001/api/app/data/weights.json",
+    "columns": "C:/Users/felip/Downloads/api-20230308T032233Z-001/api/app/data/columns.json",
+    "means_label_0": "C:/Users/felip/Downloads/api-20230308T032233Z-001/api/app/data/means_label_0.json",
+    "means_label_1": "C:/Users/felip/Downloads/api-20230308T032233Z-001/api/app/data/means_label_1.json"
+}

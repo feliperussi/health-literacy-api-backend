@@ -1,73 +1,48 @@
-import random
-import readability
-import spacy
-from collections import Counter
-from DataModel import DataModel
-from spacy.lang.en.stop_words import STOP_WORDS
+import json
+import pandas as pd
+from utils.cleaning import clean_by_df
+from models.model_gb import GradientBoostingModel
+from models.model_rf import RandomForestModel
+from models.model_emd import EMDistanceModel
+# from DataProcessing import DataProcessing3
 
-nlp = spacy.load('en_core_web_sm')
 class PredictionModel:
+    def __init__(self, routes_path):
+        with open(routes_path, 'r') as file:
+            self.routes = json.load(file)
 
-    def __init__(self):
-        pass
-    
-    def page(self, id):
-        '''Return https://www.clinicaltrials.gov/ct2/show/{id} if id is valid make a request to verify if it is valid'''
-        if id is None:
-            return "Not valid id"
-        if id == "":
-            return "Not valid id"
-        return f'https://www.clinicaltrials.gov/ct2/show/{id}'
+        self.gb_model = GradientBoostingModel(self.routes['gb_model'], self.routes['weights'], self.routes['columns'])
+        self.rf_model = RandomForestModel(self.routes['rf_model'], self.routes['weights'], self.routes['columns'])
+        self.emd_model = EMDistanceModel(self.routes['weights'], self.routes['means_label_0'], self.routes['means_label_1'])
 
-    def scores(self, text):
-        scores = readability.getmeasures(text, lang='en')
-        readability_dict = dict(scores['readability grades'])
-        sentence_dict = dict(scores['sentence info'])
-        word_dict = dict(scores['word usage'])
-        sentence_beg_dict = dict(scores['sentence beginnings'])
-        return {
-            "readability_grades": readability_dict,
-            "sentence_info": sentence_dict,
-            "word_usage": word_dict,
-            "sentence_beginnings": sentence_beg_dict
-        }
+    def predict(self, sample, model='gb'):
+        response = {"prediction": None, "score_plain": None, "score_no_plain": None}
+        try:
+            sample = self.cleaning(sample)
+            prediction_emd, score_plain, score_no_plain =  self.emd_model.predict(sample)
+            score_plain = score_plain.to_dict(orient='records')
+            score_no_plain = score_no_plain.to_dict(orient='records')
+            response = {"prediction": prediction_emd[0], "score_plain": score_plain[0], "score_no_plain": score_no_plain[0]}
 
-    def distributions(self, text):
-        doc = nlp(text)
-        verbs = [token.text.lower() for token in doc if token.pos_ == 'VERB']
-        nouns = [token.text.lower() for token in doc if token.pos_ == 'NOUN']
-        adjectives = [token.text.lower() for token in doc if token.pos_ == 'ADJ']
+        except Exception:
+            return response
+        
+        if model == 'gb':
+            prediction_gb = self.gb_model.predict(sample)
+            response['prediction'] = prediction_gb[0]
+        elif model == 'rf':
+            prediction_rf = self.rf_model.predict(sample)
+            response['prediction'] = prediction_rf[0]
+        elif model == 'emd':
+            response['prediction'] = prediction_emd[0]
 
-        verbs_count = Counter(verbs)
-        nouns_count = Counter(nouns)
-        adjectives_count = Counter(adjectives)
+        return response
 
-        return {
-            "verbs": dict(verbs_count),
-            "nouns": dict(nouns_count),
-            "adjectives": dict(adjectives_count)
-        }
-
-    def predict(self, text):
-        arr = [random.randint(0, 3) for _ in range(len(text.split()))]
-        return {
-                "response": arr,
-                "original_input": text
-            }
-    
-    def make_predictions(self, data: DataModel):
-        result = self.predict(data.text)
-        return result
-
-    def get_scores(self, data: DataModel):
-        result = self.scores(data.text)
-        return result
-
-    def get_distributions(self, data: DataModel):
-        result = self.distributions(data.text)
-        return result
-
-    def get_page(self, data: DataModel):
-        result = self.page(data.text)
-        return result
-
+    def cleaning(self, sample):
+        try:
+            sample = pd.DataFrame(sample, index=[0])
+        except Exception:
+            return None
+        
+        return clean_by_df(sample)
+        
