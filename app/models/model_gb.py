@@ -6,32 +6,24 @@ from sklearn.ensemble import GradientBoostingClassifier
 class GradientBoostingModel:
     def __init__(self, model_path, weights_path, columns_path):
         """
-        Initializes the GradientBoostingModel class.
+        Initialize the GradientBoostingModel with paths to the model, weights, and columns.
 
-        Parameters:
-        -----------
-        model_path : str
-            The path to the pre-trained model file.
-        weights_path : str
-            The path to the weights file.
-        columns_path : str
-            The path to the columns file.
+        Args:
+            model_path (str): Path to the pickle file containing the trained model.
+            weights_path (str): Path to the JSON file containing model weights.
+            columns_path (str): Path to the JSON file containing column names.
         """
         self.clf = GradientBoostingClassifier()
         self.load_model(model_path, weights_path, columns_path)
 
     def load_model(self, model_path, weights_path, columns_path):
         """
-        Loads the pre-trained model, weights and columns.
+        Load the model, weights, and columns from files.
 
-        Parameters:
-        -----------
-        model_path : str
-            The path to the pre-trained model file.
-        weights_path : str
-            The path to the weights file.
-        columns_path : str
-            The path to the columns file.
+        Args:
+            model_path (str): Path to the pickle file containing the trained model.
+            weights_path (str): Path to the JSON file containing model weights.
+            columns_path (str): Path to the JSON file containing column names.
         """
         with open(model_path, 'rb') as model_file:
             self.clf = pickle.load(model_file)
@@ -44,24 +36,19 @@ class GradientBoostingModel:
 
     def predict(self, X_test):
         """
-        Predicts the target variable for the given input data.
+        Predict the labels for the given test data.
 
-        Parameters:
-        -----------
-        X_test : numpy.ndarray
-            The input data to predict the target variable for.
+        Args:
+            X_test (pd.DataFrame): The test data.
 
         Returns:
-        --------
-        numpy.ndarray
-            The predicted target variable for the given input data.
+            np.ndarray: Predicted labels.
         """
         size = X_test.shape[0]
         default = np.array([-1] * size)
         
         try:
             X_test = X_test[self.columns]
-           
         except Exception:
             return default
             

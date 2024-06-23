@@ -1,10 +1,9 @@
 import json
 import pandas as pd
-from utils.cleaning import clean_by_df
-from models.model_gb import GradientBoostingModel
-from models.model_rf import RandomForestModel
-from models.model_emd import EMDistanceModel
-# from DataProcessing import DataProcessing3
+from app.utils.cleaning import clean_by_df
+from app.models.model_gb import GradientBoostingModel
+from app.models.model_rf import RandomForestModel
+from app.models.model_emd import EMDistanceModel
 
 class PredictionModel:
     def __init__(self, routes_path):
@@ -19,12 +18,20 @@ class PredictionModel:
         response = {"prediction": None, "score_plain": None, "score_no_plain": None}
         try:
             sample = self.cleaning(sample)
-            prediction_emd, score_plain, score_no_plain =  self.emd_model.predict(sample)
+            if sample is None:
+                raise ValueError("Sample is None after cleaning.")
+            
+
+            prediction_emd, score_plain, score_no_plain = self.emd_model.predict(sample)
             score_plain = score_plain.to_dict(orient='records')
             score_no_plain = score_no_plain.to_dict(orient='records')
-            response = {"prediction": prediction_emd[0], "score_plain": score_plain[0], "score_no_plain": score_no_plain[0]}
+            response = {
+                "prediction": prediction_emd[0],
+                "score_plain": score_plain[0],
+                "score_no_plain": score_no_plain[0]
+            }
 
-        except Exception:
+        except Exception as e:
             return response
         
         if model == 'gb':
@@ -39,10 +46,24 @@ class PredictionModel:
         return response
 
     def cleaning(self, sample):
+        """
+        Clean and preprocess the input sample.
+
+        Args:
+            sample (dict): The input data sample.
+
+        Returns:
+            pd.DataFrame: The cleaned and preprocessed sample.
+        """
         try:
-            sample = pd.DataFrame(sample, index=[0])
-        except Exception:
+            # Flatten the nested dictionary structure
+            flat_sample = pd.json_normalize(sample)
+            sample_df = pd.DataFrame(flat_sample)
+
+            # Remove 'readability.' prefix from column names
+            sample_df.columns = [col.replace('readability.', '') for col in sample_df.columns]
+        except Exception as e:
             return None
         
-        return clean_by_df(sample)
-        
+        cleaned_sample = clean_by_df(sample_df)
+        return cleaned_sample

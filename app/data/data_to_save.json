@@ -1,12 +1,5 @@
 {
   "columns_to_drop": [
-    "events",
-    "languages",
-    "characters",
-    "sentences",
-    "words",
-    "paragraphs",
-    "conjunctions"
   ],
   "special_columns": [
     "total_words",
