@@ -91,14 +91,13 @@ This project is a FastAPI application for health literacy analysis.
     docker run -p 8000:8000 health-literacy-api
     ```
 
-Certainly! Here's the `API Endpoints` section in markdown code:
-
 ## API Endpoints
 
 ### Predict Readability with EMD Model
 
 - **Endpoint:** `/comment/predict/model_emd`
 - **Method:** `POST`
+- **Description:** Predicts the readability of the given text using the EMD (Earth Mover's Distance) model.
 - **Request Body:**
   ```json
   {
@@ -118,6 +117,7 @@ Certainly! Here's the `API Endpoints` section in markdown code:
 
 - **Endpoint:** `/comment/predict/model_rf`
 - **Method:** `POST`
+- **Description:** Predicts the readability of the given text using the Random Forest model.
 - **Request Body:**
   ```json
   {
@@ -137,6 +137,7 @@ Certainly! Here's the `API Endpoints` section in markdown code:
 
 - **Endpoint:** `/comment/predict/model_gb`
 - **Method:** `POST`
+- **Description:** Predicts the readability of the given text using the Gradient Boosting model.
 - **Request Body:**
   ```json
   {
@@ -156,6 +157,7 @@ Certainly! Here's the `API Endpoints` section in markdown code:
 
 - **Endpoint:** `/comment/scoring`
 - **Method:** `POST`
+- **Description:** Provides detailed readability scores for the given text, including various readability grades and sentence information.
 - **Request Body:**
   ```json
   {
@@ -176,10 +178,11 @@ Certainly! Here's the `API Endpoints` section in markdown code:
 
 - **Endpoint:** `/comment/distributions`
 - **Method:** `POST`
+- **Description:** Analyzes the given text to provide distributions of different types of words, sentences, and other text characteristics.
 - **Request Body:**
   ```json
   {
-    "text": "<<Your text here>>"
+    "text": "<Your text here>"
   }
   ```
 - **Response:**
@@ -196,6 +199,7 @@ Certainly! Here's the `API Endpoints` section in markdown code:
 
 - **Endpoint:** `/comment/readability`
 - **Method:** `POST`
+- **Description:** Provides a comprehensive readability analysis of the given text, including various readability metrics and detailed sentence and word usage information.
 - **Request Body:**
   ```json
   {
